@@ -9,10 +9,13 @@ RUN npm run build
 # ---------- 2. backend ----------
 FROM golang:1.24-alpine AS api
 WORKDIR /src
+# -mod=mod resolves only what the server build needs (no test-only deps), and
+# GOTOOLCHAIN=auto lets Go fetch a newer toolchain if a dependency requires it.
+ENV GOFLAGS=-mod=mod GOTOOLCHAIN=auto CGO_ENABLED=0 GOOS=linux
 COPY backend/go.mod backend/go.sum* ./
-RUN go mod download || true
+RUN go mod download
 COPY backend/ ./
-RUN go mod tidy && CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/sentinel ./cmd/server
+RUN go build -trimpath -ldflags="-s -w" -o /out/sentinel ./cmd/server
 
 # ---------- 3. runtime: distroless, non-root, ~35 MB ----------
 FROM gcr.io/distroless/static-debian12:nonroot
