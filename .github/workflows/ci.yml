@@ -19,7 +19,9 @@ jobs:
       - name: go test
         run: |
           set -o pipefail
-          go test -race -count=1 -coverprofile=coverage.out ./... 2>&1 | tee test-output.txt
+          # only packages that have tests (avoids the 'covdata' tool on test-less packages)
+          PKGS=$(go list -f '{{if .TestGoFiles}}{{.ImportPath}}{{end}}' ./...)
+          go test -race -count=1 -coverprofile=coverage.out $PKGS 2>&1 | tee test-output.txt
       - name: Report failures as annotations
         if: failure()
         run: |
