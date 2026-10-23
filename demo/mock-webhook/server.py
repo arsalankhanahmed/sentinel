@@ -42,7 +42,8 @@ def summarize(channel, body):
                     "lines": text.split("\n"), "link": link}
         if body.get("messaging_product") == "whatsapp":
             p = [x["text"] for x in body["template"]["components"][0]["parameters"]]
-            return {"title": p[1], "badge": p[0], "lines": [f"Source: {p[2]}", f"Time: {p[3]}"], "link": p[4]}
+            link = p[4] if p[4].startswith("http") else ""  # resolved messages carry "-"
+            return {"title": p[1], "badge": p[0], "lines": [f"Source: {p[2]}", f"Time: {p[3]}"], "link": link}
     except Exception:  # noqa: BLE001
         pass
     return {"title": channel, "badge": "", "lines": [json.dumps(body)[:300]], "link": ""}

@@ -129,7 +129,21 @@ Without Docker (local PostgreSQL), set `DEMO_DB_URL=postgres://demo:demo@localho
 
 ---
 
-## 6. Troubleshooting the demo
+## 6. Recorded walkthrough video
+
+A narrated 2-minute recording of the full script is in [`docs/media/sentinel-demo.mp4`](media/sentinel-demo.mp4) — use it when a live demo is not possible.
+
+To re-record (e.g. after UI changes), start and seed the demo stack, then:
+
+```bash
+pip install playwright && playwright install chromium
+python demo/recording/record_demo.py --out sentinel-demo.webm
+ffmpeg -i sentinel-demo.webm -c:v libx264 -crf 23 -pix_fmt yuv420p -movflags +faststart sentinel-demo.mp4
+```
+
+The script drives the browser with a visible cursor and on-screen captions, injects application errors, fixes the data and shows auto-resolution.
+
+## 7. Troubleshooting the demo
 
 | Symptom | Fix |
 |---|---|

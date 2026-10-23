@@ -2,7 +2,7 @@
 
 Plug-and-play monitoring that **never touches your application code**.
 
-📘 [User Manual](docs/USER_MANUAL.md) · 🏗️ [Technical Document](docs/TECHNICAL_DOCUMENT.md) · 🎤 [Demo Guide](docs/DEMO_GUIDE.md) · ✅ [Test Report](docs/TEST_REPORT.md)
+🎬 [Demo video (2 min)](docs/media/sentinel-demo.mp4) · 📘 [User Manual](docs/USER_MANUAL.md) · 🏗️ [Technical Document](docs/TECHNICAL_DOCUMENT.md) · 🎤 [Demo Guide](docs/DEMO_GUIDE.md) · ✅ [Test Report](docs/TEST_REPORT.md)
 
 ![Dashboard](docs/images/01-dashboard.png)
 
