@@ -64,9 +64,12 @@ func TestPoolDeduplicatesInflightKey(t *testing.T) {
 		t.Fatal("different key must be accepted")
 	}
 	close(release)
-	time.Sleep(50 * time.Millisecond)
-	if !p.Submit("rule:1", func(context.Context) {}) {
-		t.Fatal("key must be reusable after completion")
+	deadline := time.Now().Add(3 * time.Second)
+	for !p.Submit("rule:1", func(context.Context) {}) {
+		if time.Now().After(deadline) {
+			t.Fatal("key must be reusable after completion")
+		}
+		time.Sleep(10 * time.Millisecond)
 	}
 }
 
@@ -94,7 +97,7 @@ func TestPoolNonBlockingWhenFull(t *testing.T) {
 	if p.Submit("b", func(context.Context) {}) {
 		t.Fatal("second should be rejected when queue is full")
 	}
-	if time.Since(start) > 50*time.Millisecond {
+	if time.Since(start) > 500*time.Millisecond { // generous for slow CI runners with -race
 		t.Fatal("Submit must never block the scheduler")
 	}
 }

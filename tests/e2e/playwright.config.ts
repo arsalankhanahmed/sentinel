@@ -23,7 +23,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1, // specs share one live stack
   retries: process.env.CI ? 1 : 0,
-  reporter: [["list"], ["html", { open: "never", outputFolder: "playwright-report" }], ["junit", { outputFile: "results/junit.xml" }]],
+  reporter: [[process.env.CI ? "github" : "list"], ["list"], ["html", { open: "never", outputFolder: "playwright-report" }], ["junit", { outputFile: "results/junit.xml" }]],
   use: {
     baseURL,
     trace: "retain-on-failure",
