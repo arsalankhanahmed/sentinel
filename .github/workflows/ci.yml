@@ -22,7 +22,8 @@ jobs:
           go test -race -count=1 -coverprofile=coverage.out ./... 2>&1 | tee test-output.txt
       - name: Report failures as annotations
         if: failure()
-        run: grep -E "^(--- FAIL|FAIL|panic:|\s+\S+_test.go:[0-9]+:|.*\.go:[0-9]+:[0-9]+:)" test-output.txt | head -40 | sed 's/^/::error::/' || true
+        run: |
+          { grep -E "^(--- FAIL|FAIL|panic:)|_test\.go:[0-9]+:" test-output.txt || true; tail -n 25 test-output.txt; } | head -60 | sed 's/^/::error::/'
       - run: go tool cover -func=coverage.out | tail -1
 
   frontend:
