@@ -46,7 +46,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Start demo stack
-        run: docker compose -f docker-compose.demo.yml up --build -d
+        run: |
+          set -o pipefail
+          docker compose -f docker-compose.demo.yml up --build -d 2>&1 | tee compose.log
+      - name: Report stack failure as annotations
+        if: failure()
+        run: |
+          { grep -iE "error|failed|cannot|not found" compose.log || true; tail -n 30 compose.log; } | head -60 | sed 's/^/::error::/'
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - name: Install Playwright
