@@ -92,7 +92,7 @@ Local dev:
 cd backend && go mod tidy
 AUTH_DISABLED=true MASTER_KEY=dev go run ./cmd/server
 # frontend (proxies /api → :8080)
-cd frontend && npm install && VITE_AUTH_DISABLED=true npm run dev
+cd frontend && npm install && npm run dev
 # real tokens
 JWT_SECRET=... go run ./cmd/token -sub you@corp.com -role admin
 ```
