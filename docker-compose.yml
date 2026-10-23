@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: sentinel
+      POSTGRES_PASSWORD: sentinel
+      POSTGRES_DB: sentinel
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentinel"]
+      interval: 5s
+      retries: 10
+    ports: ["5432:5432"]
+
+  sentinel:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://sentinel:sentinel@postgres:5432/sentinel?sslmode=disable
+    depends_on:
+      postgres: { condition: service_healthy }
+    ports: ["8080:8080"]
+    restart: unless-stopped
+
+volumes:
+  pgdata:

@@ -1,0 +1,17 @@
+{
+  "name": "sentinel-e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:api": "playwright test --project=api",
+    "test:ui": "playwright test --project=ui-desktop --project=ui-mobile",
+    "test:headed": "playwright test --project=ui-desktop --headed",
+    "docs:screenshots": "playwright test --project=docs",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22.10.0"
+  }
+}

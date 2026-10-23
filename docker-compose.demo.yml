@@ -1,0 +1,49 @@
+# ============================================================================
+# One-command DEMO environment
+#   docker compose -f docker-compose.demo.yml up --build -d
+#   node demo/seed/seed.mjs --api http://localhost:8080 --reset
+#
+#   Dashboard ............ http://localhost:8080
+#   Mock Teams/Zoom/WA ... http://localhost:9911
+#   Email inbox (Mailpit)  http://localhost:8025
+# ============================================================================
+services:
+  coredb:                     # Sentinel's own Core DB
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: sentinel, POSTGRES_PASSWORD: sentinel, POSTGRES_DB: sentinel }
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U sentinel"], interval: 3s, retries: 20 }
+
+  appdb:                      # The "customer application" being monitored (demo ERP)
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: demo, POSTGRES_PASSWORD: demo, POSTGRES_DB: erp }
+    volumes:
+      - ./demo/appdb/postgres:/docker-entrypoint-initdb.d:ro
+    ports: ["55432:5432"]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U demo -d erp"], interval: 3s, retries: 20 }
+
+  mock-webhook:               # Fake Teams / Zoom / WhatsApp + UP/DOWN probe targets
+    image: python:3.12-alpine
+    command: ["python", "/app/server.py"]
+    volumes: ["./demo/mock-webhook:/app:ro"]
+    ports: ["9911:9911"]
+
+  mailpit:                    # Catches HTML emails; web UI on :8025
+    image: axllent/mailpit:latest
+    ports: ["8025:8025"]
+
+  sentinel:
+    build: .
+    environment:
+      DATABASE_URL: postgres://sentinel:sentinel@coredb:5432/sentinel?sslmode=disable
+      PUBLIC_BASE_URL: http://localhost:8080
+      MASTER_KEY: demo-master-key-change-me
+      AUTH_DISABLED: "true"            # DEMO ONLY
+      HEARTBEAT_INTERVAL: 15s
+      PROBE_FAIL_THRESHOLD: "2"
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_FROM: sentinel@demo.local
+    depends_on:
+      coredb: { condition: service_healthy }
+      appdb: { condition: service_healthy }
+    ports: ["8080:8080"]

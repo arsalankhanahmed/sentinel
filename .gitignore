@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+backend/sentinel
+tests/e2e/test-results/
+tests/e2e/playwright-report/
+tests/e2e/results/
+coverage.out
+.DS_Store
